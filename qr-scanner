@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>QR Scanner</title>
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #111827, #1e3a8a);
+            color: white;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 500px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        #reader {
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.25);
+            word-break: break-all;
+            min-height: 50px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        a {
+            color: #93c5fd;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>📷 QR Scanner</h1>
+
+    <p>Đưa mã QR vào camera để quét</p>
+
+    <div id="reader"></div>
+
+    <div class="result">
+        <strong>Kết quả:</strong>
+        <div id="result">Chưa quét QR</div>
+    </div>
+
+    <button onclick="copyResult()">📋 Sao chép</button>
+
+</div>
+
+<script>
+
+let lastResult = "";
+
+function onScanSuccess(decodedText, decodedResult) {
+
+    if (decodedText === lastResult) {
+        return;
+    }
+
+    lastResult = decodedText;
+
+    document.getElementById("result").innerHTML =
+        `<a href="${decodedText}" target="_blank">${decodedText}</a>`;
+}
+
+function onScanFailure(error) {
+    // Bỏ qua lỗi khi camera chưa nhận diện được QR
+}
+
+const scanner = new Html5QrcodeScanner(
+    "reader",
+    {
+        fps: 10,
+        qrbox: {
+            width: 250,
+            height: 250
+        }
+    },
+    false
+);
+
+scanner.render(onScanSuccess, onScanFailure);
+
+function copyResult() {
+
+    if (!lastResult) {
+        alert("Chưa có kết quả QR!");
+        return;
+    }
+
+    navigator.clipboard.writeText(lastResult);
+
+    alert("Đã sao chép!");
+}
+
+</script>
+
+</body>
+</html>
